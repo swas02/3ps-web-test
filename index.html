@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://accounts.google.com; connect-src 'self' https: wss: ws: https://www.googleapis.com https://accounts.google.com; style-src 'self' 'unsafe-inline'; font-src 'self' data: https:; img-src 'self' data: blob: https:; frame-src https://accounts.google.com; base-uri 'none'; form-action 'none';">
+  <title>Projects</title>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script type="module" crossorigin src="./assets/index-KiAXx0wr.js"></script>
+  <link rel="modulepreload" crossorigin href="./assets/rolldown-runtime-W7wSyTde.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-yjs-BylWia7_.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-zip-BxgY9PxV.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-zod-CKCyQTqt.js">
+  <link rel="modulepreload" crossorigin href="./assets/data-countries-Bwt8xEuM.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-react-qvpxGU-B.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-math-vJXWL0d0.js">
+  <link rel="modulepreload" crossorigin href="./assets/vendor-cscc-nuoogk9h.js">
+  <link rel="modulepreload" crossorigin href="./assets/data-wpi-J0bUZzMb.js">
+</head>
+<body>
+
+  <!-- ================= Home View ================= -->
+  <div id="homeView">
+    <header>
+      <h1>Projects</h1>
+      <div>
+        <button id="authBtn">Connect Google Drive</button>
+        <button id="importBtn" type="button">Import Project (.3ps / .3psw)</button>
+        <input type="file" id="importFile" accept=".3ps,.3psw" hidden />
+        <button id="openFromDriveBtn" type="button">Open from Drive</button>
+        <button id="newProjectBtn">+ New Project</button>
+      </div>
+    </header>
+
+    <hr />
+
+    <!-- Project tile grid -->
+    <div id="projectGrid"></div>
+
+    <!-- New project modal -->
+    <dialog id="newProjectDialog">
+      <h2>New Project</h2>
+      <form method="dialog" id="newProjectForm">
+        <label for="newProjectName">Project name</label><br />
+        <input
+          type="text"
+          id="newProjectName"
+          name="projectName"
+          placeholder="Enter project name"
+          autocomplete="off"
+          maxlength="80"
+          required
+        /><br /><br />
+        <label for="newProjectCountry">Country</label><br />
+        <select id="newProjectCountry" name="projectCountry" required></select><br /><br />
+        <label for="newProjectCurrency">Currency</label><br />
+        <select id="newProjectCurrency" name="projectCurrency" disabled></select><br />
+        <small>Country and currency can't be changed after the project is created.</small><br /><br />
+        <menu>
+          <button type="submit">Create</button>
+          <button type="button" id="cancelDialogBtn">Cancel</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <!-- Open a synced project from Google Drive -->
+    <dialog id="openFromDriveDialog">
+      <h2>Open from Drive</h2>
+      <p><small>Projects you turned sync on for, that are not in this browser yet.</small></p>
+      <p id="openFromDriveStatus" role="status"></p>
+      <ul id="openFromDriveList"></ul>
+      <menu>
+        <button type="button" id="closeOpenFromDriveBtn">Close</button>
+      </menu>
+    </dialog>
+
+    <!-- Rename project modal -->
+    <dialog id="renameProjectDialog">
+      <h2>Rename Project</h2>
+      <form method="dialog" id="renameProjectForm">
+        <input type="hidden" id="renameProjectId" />
+        <label for="renameProjectName">Project name</label><br />
+        <input
+          type="text"
+          id="renameProjectName"
+          name="projectName"
+          placeholder="Enter new project name"
+          autocomplete="off"
+          maxlength="80"
+          required
+        /><br /><br />
+        <menu>
+          <button type="submit">Rename</button>
+          <button type="button" id="cancelRenameDialogBtn">Cancel</button>
+        </menu>
+      </form>
+    </dialog>
+
+    <!-- Delete project modal -->
+    <dialog id="deleteProjectDialog">
+      <h2>Delete Project</h2>
+      <form method="dialog" id="deleteProjectForm">
+        <input type="hidden" id="deleteProjectId" />
+        <p>Are you sure you want to delete <strong id="deleteProjectTargetName"></strong>?</p>
+        <p><small>This action will delete all local data for this project and cannot be undone.</small></p>
+        <menu>
+          <button type="submit">Delete</button>
+          <button type="button" id="cancelDeleteDialogBtn">Cancel</button>
+        </menu>
+      </form>
+    </dialog>
+  </div>
+
+  <!-- ================= Project Detail View ================= -->
+  <div id="projectView" hidden>
+    <header>
+      <p><a href="#" id="backToHomeBtn">← Back to Projects</a></p>
+      <h1 id="projectTitle">Loading…</h1>
+      <div>
+        <button id="projectAuthBtn">Connect Google Drive</button>
+        <button type="button" id="unlockAnalysisBtn" hidden>Unlock and clear results</button>
+      </div>
+    </header>
+
+    <!-- Unlock the inputs: clears the analysis results (services/analysisLock.js) -->
+    <dialog id="unlockAnalysisDialog">
+      <h2>Unlock the inputs?</h2>
+      <p>The analysis results will be cleared. Run the analysis again after editing to get new results.</p>
+      <menu>
+        <button type="button" id="confirmUnlockAnalysisBtn"><strong>Unlock and clear results</strong></button>
+        <button type="button" id="cancelUnlockAnalysisBtn">Cancel</button>
+      </menu>
+    </dialog>
+
+    <hr />
+
+    <!-- Project Tools & Drive Sync -->
+    <details id="projectSettingsDetails">
+      <summary><strong>Project Settings &amp; Drive Sync</strong></summary>
+      <br />
+      <label>
+        <input type="checkbox" id="syncToggle" disabled />
+        Sync this project to Google Drive
+      </label>
+    </details>
+
+    <p id="statusMsg"></p>
+    <p id="errorBanner" hidden></p>
+
+    <hr />
+
+    <!-- Navigation Tabs for 3psLCCA Modules & Sub-Tabs -->
+    <nav id="groupTabsNav" aria-label="3psLCCA Module Groups"></nav>
+    <br />
+    <nav id="subTabsNav" aria-label="3psLCCA Sub-Modules" hidden></nav>
+
+    <hr />
+
+    <p id="appLoading" style="text-align:center;padding:2rem;color:#666;">Loading 3psLCCA modules…</p>
+    <main id="chunkTabsMain"></main>
+  </div>
+
+</body>
+</html>
